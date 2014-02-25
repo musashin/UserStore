@@ -1,6 +1,8 @@
 import os
 import datetime
 import pickle
+from prettytable.prettytable import *
+import textwrap
 
 _max_history = 3
 _store_path = r'./.store'
@@ -63,9 +65,23 @@ class UserStore(object):
         except BaseException as e:
             print str(e)
 
-
-
-
+    def print_history(self,max_history=6):
+        
+        table = PrettyTable(field_names=('index',
+                                         'time',
+                                         'script',
+                                         'script directory',
+                                         'result'))
+        index = 0
+        
+        for test in self.test_history:
+            table.add_row([index,test['timestamp'],
+                                 repr(os.path.basename(test['script'])),
+                                 repr(os.path.dirname(test['script'])),
+                                 test['result']])
+            index += 1
+            
+        print table
 
 if __name__ == '__main__':
 
@@ -73,33 +89,29 @@ if __name__ == '__main__':
 
     store = UserStore('Nico')
 
-    store.add_test('C:\temp\X.txt','mylogg','PASS')
+    store.add_test('C:/temp/X.txt','mylogg','PASS')
 
     time.sleep(2)
 
-    store.add_test('C:\temp\Y.txt','mylogg','PASS')
+    store.add_test('C:/temp/Y.txt','mylogg','PASS')
 
     time.sleep(2)
 
-    store.add_test('C:\temp\Z.txt','mylogg','PASS')
+    store.add_test('C:/temp/YW.txt','mylogg','PASS')
 
     time.sleep(2)
 
-    store.add_test('C:\temp\YW.txt','mylogg','PASS')
-
-    time.sleep(2)
-
-    store.add_test('C:\temp\tata.txt','mylogg','PASS')
+    store.add_test('C:/temp/tata.txt','mylogg','PASS')
 
     import time
 
     time.sleep(2)
 
-    store.add_test('C:\temp\toto.txt','mylogg','PASS')
+    store.add_test('C:/temp/toto.txt','mylogg','PASS')
 
     store.save()
 
-    print store.test_history
+    store.print_history()
 
 
 
