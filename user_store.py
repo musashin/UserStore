@@ -45,6 +45,8 @@ class UserStore(object):
 
         self.test_history = self.test_history[0:_max_history]
 
+        self.save()
+
 
     def get_store_file_path(self):
         return os.path.join(self.get_store_file_directory(), self.operator_name + '.bin')
@@ -55,13 +57,34 @@ class UserStore(object):
 
     def save(self):
         #TODO
-        try:
-            store_file = open(self.get_store_file_path(), 'wb+')
 
-            pickle.dump(self.test_history, store_file)
+        try:
+
+            with open(self.get_store_file_path(), 'wb+') as store_file:
+
+                pickle.dump(self.test_history, store_file)
 
         except BaseException as e:
             print str(e)
+
+    def load(self):
+
+        #TODO
+        try:
+
+            with open(self.get_store_file_path(), 'rb') as store_file:
+
+                self.test_history.extend(pickle.load(store_file))
+
+                list.sort(self.test_history, key=lambda test_entry: test_entry['timestamp'], reverse=True)
+
+                self.test_history = self.test_history[0:_max_history]
+
+        except BaseException as e:
+            print str(e)
+
+
+
 
     def print_history(self, max_history=None):
         
@@ -87,27 +110,29 @@ if __name__ == '__main__':
 
     store = UserStore('Nico')
 
-    store.add_test('C:/temp/X.txt','mylogg','PASS')
+    """
+        store.add_test('C:/temp/X.txt','mylogg','PASS')
 
-    time.sleep(2)
+        time.sleep(2)
 
-    store.add_test('C:/temp/dsds/ds/d/dd/ddddddddd/Y.txt','mylogg','PASS')
+        store.add_test('C:/temp/dsds/ds/d/dd/ddddddddd/Y.txt','mylogg','PASS')
 
-    time.sleep(2)
+        time.sleep(2)
 
-    store.add_test('C:/temp/YW/ffffffffffffffffffffff/ffffffffff.txt','mylogg','PASS')
+        store.add_test('C:/temp/YW/ffffffffffffffffffffff/ffffffffff.txt','mylogg','PASS')
 
-    time.sleep(2)
+        time.sleep(2)
 
-    store.add_test('C:/temp/tata.txt','mylogg','PASS')
+        store.add_test('C:/temp/tata.txt','mylogg','PASS')
 
-    import time
+        import time
 
-    time.sleep(2)
+        time.sleep(2)
 
-    store.add_test('C:/temp/toto.txt','mylogg','PASS')
+        store.add_test('C:/temp/toto.txt','mylogg','PASS')
+    """
 
-    store.save()
+    store.load()
 
     store.print_history()
 
