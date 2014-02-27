@@ -8,10 +8,26 @@ _max_history = 3
 _store_path = r'./.store'
 
 class UserStore(object):
+    """
+    Purpose:
+        A class to store operator test history.
+
+    Additionally, this class permits:
+        - Printing history in human readable format.
+        - Exporting/Import History.
+    """
 
     def __init__(self, operator_name):
         """
-        #TODO
+        Purpose:
+            Initialize user history instance
+
+        Parameters:
+            operator_name: string used to identify the test operator
+
+        Implementation:
+            1. Create the directory used to store data if required.
+            2. Load user history.
 
         """
         self.operator_name = operator_name
@@ -29,7 +45,20 @@ class UserStore(object):
 
     def add_test(self, script_file, log_file, script_result):
         """
-        #TODO
+        Purpose:
+            Add a new test to the user history and save the data.
+
+        Parameters:
+            - script_file: fully qualified file to the script file.
+            - log_file: fully qualified path to the log file
+            - script_result: string identifying the script result.
+
+        Implementation:
+            1. Remove any existing test with exact same script from history.
+            2. Add new test to history.
+            3. Reorder history with the more recent test first.
+            4. Limit history size to max_history.
+            5. Save the new history.
 
         """
 
