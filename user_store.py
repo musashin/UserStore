@@ -65,7 +65,7 @@ class UserStore(object):
         except BaseException as e:
             print str(e)
 
-    def print_history(self,max_history=6):
+    def print_history(self, max_history=6):
         
         table = PrettyTable(field_names=('index',
                                          'time',
@@ -75,10 +75,10 @@ class UserStore(object):
         index = 0
         
         for test in self.test_history:
-            table.add_row([index,test['timestamp'],
-                                 repr(os.path.basename(test['script'])),
-                                 repr(os.path.dirname(test['script'])),
-                                 test['result']])
+            table.add_row([index, '\n'.join(textwrap.wrap(test['timestamp'].strftime('%m/%d/%y-%H:%M'), 16)),
+                                  '\n'.join(textwrap.wrap(repr(os.path.basename(test['script'])), 16)),
+                                  '\n'.join(textwrap.wrap(repr(os.path.dirname(test['script'])), 16)),
+                                  '\n'.join(textwrap.wrap(test['result'], 16))])
             index += 1
             
         print table
@@ -93,11 +93,11 @@ if __name__ == '__main__':
 
     time.sleep(2)
 
-    store.add_test('C:/temp/Y.txt','mylogg','PASS')
+    store.add_test('C:/temp/dsds/ds/d/dd/ddddddddd/Y.txt','mylogg','PASS')
 
     time.sleep(2)
 
-    store.add_test('C:/temp/YW.txt','mylogg','PASS')
+    store.add_test('C:/temp/YW/ffffffffffffffffffffff/ffffffffff.txt','mylogg','PASS')
 
     time.sleep(2)
 
