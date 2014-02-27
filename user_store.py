@@ -41,18 +41,16 @@ class UserStore(object):
 
         self.test_history.append({'timestamp': datetime.datetime.now(), 'script': script_file, 'log': log_file, 'result': script_result})
 
-        list.sort(self.test_history, key=lambda test: test['timestamp'], reverse=True)
+        list.sort(self.test_history, key=lambda test_entry: test_entry['timestamp'], reverse=True)
 
         self.test_history = self.test_history[0:_max_history]
 
 
     def get_store_file_path(self):
-        #TODO
         return os.path.join(self.get_store_file_directory(), self.operator_name + '.bin')
 
 
     def get_store_file_directory(self):
-        #TODO
         return os.path.join(os.path.dirname(__file__), _store_path)
 
     def save(self):
@@ -65,21 +63,21 @@ class UserStore(object):
         except BaseException as e:
             print str(e)
 
-    def print_history(self, max_history=6):
+    def print_history(self, max_history=None):
         
         table = PrettyTable(field_names=('index',
                                          'time',
                                          'script',
                                          'script directory',
                                          'result'))
-        index = 0
+        index = len(self.test_history[0:max_history])-1
         
-        for test in self.test_history:
+        for test in reversed(self.test_history[0:max_history]):
             table.add_row([index, '\n'.join(textwrap.wrap(test['timestamp'].strftime('%m/%d/%y-%H:%M'), 16)),
                                   '\n'.join(textwrap.wrap(repr(os.path.basename(test['script'])), 16)),
-                                  '\n'.join(textwrap.wrap(repr(os.path.dirname(test['script'])), 16)),
+                                  '\n'.join(textwrap.wrap(repr(os.path.dirname(test['script'])), 60)),
                                   '\n'.join(textwrap.wrap(test['result'], 16))])
-            index += 1
+            index -= 1
             
         print table
 
