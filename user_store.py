@@ -25,6 +25,7 @@ class UserStore(object):
             #TODO
             print 'Cannot create directory {0!s} [{1!s}]'.format(self.get_store_file_directory(), str(e))
 
+        self.load()
 
     def add_test(self, script_file, log_file, script_result):
         """
@@ -57,7 +58,7 @@ class UserStore(object):
 
         except:
             #TODO
-            print 'No test in history at index {0!s}'.format(test_index)
+            print 'Cannot retrieve test from history: no test at index {0!s}'.format(test_index)
 
 
     def get_store_file_path(self):
@@ -66,33 +67,42 @@ class UserStore(object):
     def get_store_file_directory(self):
         return os.path.join(os.path.dirname(__file__), _store_path)
 
-    def save(self):
+    def save(self, directory=None):
         #TODO
 
         try:
 
-            with open(self.get_store_file_path(), 'wb+') as store_file:
+            file_name = os.path.join(directory, self.operator_name + '.bin') if directory else self.get_store_file_path()
+
+            with open(file_name, 'wb+') as store_file:
 
                 pickle.dump(self.test_history, store_file)
 
         except BaseException as e:
-            print str(e)
+            print 'Cannot save history [{0!s}]'.format(str(e)) #TODO
 
-    def load(self):
+    def load(self, file=None):
 
         #TODO
         try:
 
-            with open(self.get_store_file_path(), 'rb') as store_file:
+            loaded_file = file if file else self.get_store_file_path()
+
+            with open(loaded_file, 'rb') as store_file:
 
                 self.test_history.extend(pickle.load(store_file))
 
+                #remove duplicates
+                self.test_history = [entry for (index, entry) in enumerate(self.test_history) if entry not in self.test_history[index+1:]]
+
+                #sort
                 list.sort(self.test_history, key=lambda test_entry: test_entry['timestamp'], reverse=True)
 
+                #limit size
                 self.test_history = self.test_history[0:_max_history]
 
         except BaseException as e:
-            print str(e)
+            print 'Cannot load history [{0!s}]'.format(str(e)) #TODO
 
 
 
@@ -115,6 +125,42 @@ class UserStore(object):
             
         print table
 
+    def export(self):
+
+        import Tkinter,tkFileDialog
+
+        root = Tkinter.Tk()
+        root.withdraw()
+
+        export_directory = tkFileDialog.askdirectory()
+
+        if export_directory:
+            try:
+                self.save(export_directory)
+            except BaseException as e:
+                 #TODO
+                 print 'Cannot save file in directory {0!s} [{1!s}]'.format(export_directory, e)
+
+    def import_store(self):
+
+        import Tkinter,tkFileDialog
+
+        root = Tkinter.Tk()
+        root.withdraw()
+
+        file_to_import = tkFileDialog.askopenfilename()
+
+        if file_to_import:
+            try:
+                self.load(file_to_import)
+            except BaseException as e:
+                 #TODO
+                 print 'Cannot load file {0!s} [{1!s}]'.format(file_to_import, e)
+
+
+
+
+
 if __name__ == '__main__':
 
     import time
@@ -122,14 +168,15 @@ if __name__ == '__main__':
     store = UserStore('Nico')
 
     """
-        store.add_test('C:/temp/X.txt','mylogg','PASS')
+    store.add_test('C:/temp/X.txt','mylogg','PASS')
 
-        time.sleep(2)
+    time.sleep(2)
 
-        store.add_test('C:/temp/dsds/ds/d/dd/ddddddddd/Y.txt','mylogg','PASS')
+    store.add_test('C:/temp/dsds/ds/d/dd/ddddddddd/Y.txt','mylogg','PASS')
 
-        time.sleep(2)
-
+    time.sleep(2)
+    """
+    """
         store.add_test('C:/temp/YW/ffffffffffffffffffffff/ffffffffff.txt','mylogg','PASS')
 
         time.sleep(2)
@@ -143,7 +190,9 @@ if __name__ == '__main__':
         store.add_test('C:/temp/toto.txt','mylogg','PASS')
     """
 
-    store.load()
+    store.print_history()
+
+    store.import_store()
 
     store.print_history()
 
