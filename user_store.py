@@ -93,7 +93,8 @@ class UserStore(object):
     def get_store_file_path(self):
         return os.path.join(self.get_store_file_directory(), self.operator_name + '.bin')
 
-    def get_store_file_directory(self):
+    @staticmethod
+    def get_store_file_directory():
         return os.path.join(os.path.dirname(__file__), _store_path)
 
     def save(self, directory=None):
@@ -187,43 +188,54 @@ class UserStore(object):
                  print 'Cannot load file {0!s} [{1!s}]'.format(file_to_import, e)
 
 
+###################### New Stuff #########################################################
 
+    @staticmethod
+    def store_exist(operator_name):
+        """
+        Purpose:
+            return TRUE if a store exist for this operator,FALSE otherwise.
+
+        Parameters:
+            operator_name: string used to identify the test operator
+
+        """
+        return os.path.isfile(os.path.join(os.path.join(os.path.dirname(__file__), _store_path),
+                                            operator_name + '.bin'))
+
+    @staticmethod
+    def get_similar_operators(operator_name):
+        """
+        Purpose:
+            Get a list of operator names with similar names that already have s tore
+
+        Parameters:
+            operator_name: string used to identify the test operator.
+
+        Implementation:
+            1. Get a list of store files.
+            2. Use get_close_matches() to determine which file are closed enougth to the queried operator name,
+            and return it
+
+        """
+
+        from os import listdir
+        from os.path import isfile, join
+        from difflib import get_close_matches
+
+
+        files = [f for f in listdir(os.path.join(os.path.dirname(__file__), _store_path))
+                 if isfile(join(os.path.join(os.path.dirname(__file__), _store_path), f))]
+
+
+        return get_close_matches(operator_name, [os.path.splitext(name)[0] for name in files], cutoff=0.8)
 
 
 if __name__ == '__main__':
 
-    import time
+    print UserStore.store_exist('ulysse ')
 
-    store = UserStore('Nico')
-
-    """
-    store.add_test('C:/temp/X.txt','mylogg','PASS')
-
-    time.sleep(2)
-
-    store.add_test('C:/temp/dsds/ds/d/dd/ddddddddd/Y.txt','mylogg','PASS')
-
-    time.sleep(2)
-    """
-    """
-        store.add_test('C:/temp/YW/ffffffffffffffffffffff/ffffffffff.txt','mylogg','PASS')
-
-        time.sleep(2)
-
-        store.add_test('C:/temp/tata.txt','mylogg','PASS')
-
-        import time
-
-        time.sleep(2)
-
-        store.add_test('C:/temp/toto.txt','mylogg','PASS')
-    """
-
-    store.print_history()
-
-    store.import_store()
-
-    store.print_history()
+    print UserStore.get_similar_operators('N. ulysse')
 
 
 
